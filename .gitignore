@@ -1,74 +1,63 @@
-# =========================
-# Flutter
-# =========================
+# ==============================
+# ANDROID / ANDROID STUDIO
+# ==============================
 
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-build/
-
-# Generated files
-*.g.dartg
-*.freezed.dart
-
-# =========================
-# Android / Gradle
-# =========================
-
-.gradle/
-**/build/
-local.properties
-captures/
-.externalNativeBuild/
-.cxx/
-
-# =========================
 # Android Studio / IntelliJ
-# =========================
-
 .idea/
 *.iml
 *.ipr
 *.iws
 
-# =========================
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local Android SDK configuration
+local.properties
+
+# Android Studio generated files
+captures/
+.externalNativeBuild/
+.cxx/
+
 # Kotlin
-# =========================
+*.kotlin_module
 
-*.class
-.kotlin/
+# APKs
+*.apk
+*.ap_
+*.aab
 
-# =========================
-# Logs
-# =========================
+# Generated Android files
+output-metadata.json
+
+# ==============================
+# LOGS / TEMPORARY FILES
+# ==============================
 
 *.log
+*.tmp
+*.temp
 
-# =========================
-# VS Code
-# =========================
+# ==============================
+# OPERATING SYSTEM
+# ==============================
 
-.vscode/
-
-# =========================
-# macOS
-# =========================
-
-.DS_Store
-
-# =========================
 # Windows
-# =========================
-
 Thumbs.db
 Desktop.ini
 
-# =========================
-# Flutter generated files
-# =========================
+# macOS
+.DS_Store
 
-.flutter-plugins
-.flutter-plugins-dependencies
+# Linux
+*~
+
+# ==============================
+# SECRETS / LOCAL CONFIGURATION
+# ==============================
+
+.env
+.env.*
+!.env.example
