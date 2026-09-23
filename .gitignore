@@ -1,0 +1,74 @@
+# =========================
+# Flutter
+# =========================
+
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Generated files
+*.g.dartg
+*.freezed.dart
+
+# =========================
+# Android / Gradle
+# =========================
+
+.gradle/
+**/build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# =========================
+# Android Studio / IntelliJ
+# =========================
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# =========================
+# Kotlin
+# =========================
+
+*.class
+.kotlin/
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# VS Code
+# =========================
+
+.vscode/
+
+# =========================
+# macOS
+# =========================
+
+.DS_Store
+
+# =========================
+# Windows
+# =========================
+
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Flutter generated files
+# =========================
+
+.flutter-plugins
+.flutter-plugins-dependencies
