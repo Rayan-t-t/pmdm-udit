@@ -2,4 +2,6 @@
 <resources>
 
     <style name="Theme.MiPrimeraApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Reto1Tarjetapresentacion" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

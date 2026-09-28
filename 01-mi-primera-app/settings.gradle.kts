@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MiPrimeraApp"
 include(":app")
+include(":app")
