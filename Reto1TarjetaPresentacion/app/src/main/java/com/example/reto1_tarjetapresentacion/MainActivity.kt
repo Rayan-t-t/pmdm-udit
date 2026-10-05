@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import android.net.Uri
+import androidx.compose.animation.animateBounds
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.reto1_tarjetapresentacion.ui.theme.Reto1TarjetaPresentacionTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.window.Dialog
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,14 +73,18 @@ fun TarjetaPresentacion(){
             modifier = Modifier
                 .size(150.dp)
                 .clip(CircleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopCenter
+
+
         )
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = "Rayan Torres",
             fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Italic
         )
         Text(
             text = "Estudiante de Dam(UDIT)",
@@ -92,7 +103,53 @@ fun TarjetaPresentacion(){
             modifier = Modifier.fillMaxWidth(0.8f)
         ){Text(text = "Mi perfil de Github")}
 
+        Button(
+            onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://linkedin.com/in/rayan-torres-torres"))
+                context.startActivity(intent)
+            },
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ){Text(text = "Mi perfil de linkedIn")}
+        var mostrarPopup by remember { mutableStateOf(false) }
 
+        Button(
+            onClick = {
+                mostrarPopup = true
+            },   modifier = Modifier.fillMaxWidth(0.8f)
+        ) {
+            Text("CV")
+        }
+
+        if (mostrarPopup) {
+            Dialog(
+                onDismissRequest = {
+                    mostrarPopup = false
+                }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Image(
+                        painter = painterResource(R.drawable.foto_perfil),
+                        contentDescription = "Imagen",
+                        modifier = Modifier.size(250.dp)
+
+                    )
+
+                    Button(
+                        onClick = {
+                            mostrarPopup = false
+                        }
+                    ) {
+                        Text("Cerrar")
+                    }
+                }
+            }
+        }
     }
 
 }
