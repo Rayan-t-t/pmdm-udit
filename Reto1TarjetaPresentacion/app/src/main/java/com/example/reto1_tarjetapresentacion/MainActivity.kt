@@ -75,7 +75,7 @@ fun TarjetaPresentacion(){
                 .clip(CircleShape),
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter
-            
+
 
 
         )
