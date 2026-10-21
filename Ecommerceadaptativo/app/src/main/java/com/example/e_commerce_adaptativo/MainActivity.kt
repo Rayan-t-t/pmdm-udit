@@ -47,6 +47,8 @@ import kotlinx.coroutines.delay
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.OutlinedButton
 
 //ACTIVITY PRINCIPAL
 class MainActivity : ComponentActivity() {
@@ -82,27 +84,27 @@ class MainActivity : ComponentActivity() {
     val catalogoHamburguesas = listOf(
         Producto(
             "Wolverine","79.99 €",
-            R.drawable.wolverine,"https://share.google/KiKXBGGccJiTbJJEi"
+            R.drawable.wolverine,"https://www.youtube.com/watch?v=s3pDMUWlA6I"
         ),
         Producto(
             "Spiderman 2","79.90 €",
-            R.drawable.spiderman2 ,"https://share.google/tsLvKe02GAmCxNbNK"
+            R.drawable.spiderman2 ,"https://www.youtube.com/watch?v=nq1M_Wc4FIc"
         ),
         Producto(
             "Bloodborne","29.90 €",
-            R.drawable.bloodborne ,"https://share.google/GycFZxWfz1aV2fCyY"
+            R.drawable.bloodborne ,"https://www.youtube.com/watch?v=G203e1HhixY"
         ),
         Producto(
             "ARC Raiders","39.90 €",
-            R.drawable.arcraiders ,"https://share.google/6xMPZoNabuzseUSFH"
+            R.drawable.arcraiders ,"https://www.youtube.com/watch?v=U0jK145mxec"
         ),
         Producto(
             "Fallout 76","44.00 €",
-            R.drawable.fallout76 ,"https://share.google/b1SfTqpwuKd9bHIpi"
+            R.drawable.fallout76 ,"https://www.youtube.com/watch?v=psArWgV7tzQ"
         ),
         Producto(
             "Darkest Dungeon 2","42.30 €",
-            R.drawable.darkestdungeon2 ,"https://share.google/PEleVnTFV0CU7uTQM"
+            R.drawable.darkestdungeon2 ,"https://www.youtube.com/watch?v=xjR_c5-RsoA"
         ),
     )
     //catalogo
@@ -128,7 +130,7 @@ class MainActivity : ComponentActivity() {
         {
             items(productos){producto ->
                 TarjetaProducto(producto)
-            }
+            }g
         }
     }
     //TARJETA DE PRODUCTO
@@ -171,26 +173,33 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val context = LocalContext.current
-                    Button(onClick = {
-                        val url = producto.link
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(url)
-                        )
-                        context.startActivity(intent)
+                        Button(
+                            onClick = {
+                                val url = producto.link
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            }, modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Trailer")
+                        }
 
+                        // Botón 2: Comprar
+                        Button(
+                            onClick = {
 
-                    },modifier = Modifier.fillMaxWidth()) {
-
-                        Text("Ver trailer")
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Comprar")
+                        }
                     }
                 }
+
             }
         }
-    }
     //Pantalla de portada
     @Composable
-    fun PatallaPrincipal(){
+    fun PatallaPrincipal() {
 //remenber + mutable stateoff cre una variable que con compose vigila
         // es decir que cuando su valor cambia compose vuelve a dibujar la pantalla solo
         // sin qu tengas que hacer nada
@@ -199,17 +208,18 @@ class MainActivity : ComponentActivity() {
         var mostrarPortada by remember { mutableStateOf(true) }
         LaunchedEffect(Unit) {
             delay(1500)
-            mostrarPortada= false
+            mostrarPortada = false
 
         }
-        if(mostrarPortada){
-            Box(modifier= Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+        if (mostrarPortada) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text("PS app", fontSize = 32.sp, fontWeight = FontWeight.Bold)
-            }}
-        else{
+            }
+        } else {
             CatalogoHamburguesa(productos = catalogoHamburguesas)
         }
 
 
+    }
+}
 
-    }}
