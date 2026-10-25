@@ -11,15 +11,21 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -44,12 +50,12 @@ private const val CLAVE_ROL_SOLICITADO = "rol_solicitado"
 private const val CLAVE_ROL_ESTUVO_ACTIVO = "rol_estuvo_activo"
 
 // Pestañas de la barra inferior.
-private enum class Pestana(val etiqueta: String, val icono: String) {
-    FILTROS("Filtros", "🚫"),
-    NUMEROS("Números", "📞"),
-    BLANCA("Lista blanca", "⭐"),
-    REGISTRO("Registro", "🕘"),
-    PROBADOR("Probador", "🔢")
+private enum class Pestana(val etiqueta: String, val icono: ImageVector) {
+    FILTROS("Filtros", Icons.Default.Warning),
+    NUMEROS("Números", Icons.Default.Phone),
+    BLANCA("Permitidos", Icons.Default.Star),
+    REGISTRO("Registro", Icons.AutoMirrored.Filled.List),
+    PROBADOR("Probador", Icons.Default.PlayArrow)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -251,8 +257,21 @@ private fun BarraNavegacion(
             NavigationBarItem(
                 selected = pestana == seleccionada,
                 onClick = { onSeleccionar(pestana) },
-                icon = { Text(pestana.icono, fontSize = 18.sp) },
-                label = { Text(pestana.etiqueta) }
+                icon = {
+                    Icon(
+                        imageVector = pestana.icono,
+                        contentDescription = pestana.etiqueta
+                    )
+                },
+                label = {
+                    Text(
+                        text = pestana.etiqueta,
+                        maxLines = 1,
+                        softWrap = false,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                },
+                alwaysShowLabel = true
             )
         }
     }
