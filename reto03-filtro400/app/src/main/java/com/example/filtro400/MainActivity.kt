@@ -17,7 +17,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +52,7 @@ private enum class Pestana(val etiqueta: String, val icono: String) {
     PROBADOR("Probador", "🔢")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaFiltro() {
     val context = LocalContext.current
@@ -155,30 +155,44 @@ fun PantallaFiltro() {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        CabeceraRol(
-            filtroActivo = filtroActivo,
-            onAbrirAjustes = { abrirAjustes() }
-        )
-
-        Box(
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Filtro 400") }
+            )
+        },
+        bottomBar = {
+            BarraNavegacion(
+                seleccionada = pestana,
+                onSeleccionar = { pestana = it }
+            )
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            when (pestana) {
-                Pestana.FILTROS -> FiltrosScreen(repo, Modifier.fillMaxSize())
-                Pestana.NUMEROS -> NumerosScreen(repo, Modifier.fillMaxSize())
-                Pestana.BLANCA -> ListaBlancaScreen(repo, Modifier.fillMaxSize())
-                Pestana.REGISTRO -> RegistroScreen(repo, Modifier.fillMaxSize())
-                Pestana.PROBADOR -> ProbadorScreen(repo, Modifier.fillMaxSize())
+            CabeceraRol(
+                filtroActivo = filtroActivo,
+                onAbrirAjustes = { abrirAjustes() }
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                when (pestana) {
+                    Pestana.FILTROS -> FiltrosScreen(repo, Modifier.fillMaxSize())
+                    Pestana.NUMEROS -> NumerosScreen(repo, Modifier.fillMaxSize())
+                    Pestana.BLANCA -> ListaBlancaScreen(repo, Modifier.fillMaxSize())
+                    Pestana.REGISTRO -> RegistroScreen(repo, Modifier.fillMaxSize())
+                    Pestana.PROBADOR -> ProbadorScreen(repo, Modifier.fillMaxSize())
+                }
             }
         }
-
-        BarraNavegacion(
-            seleccionada = pestana,
-            onSeleccionar = { pestana = it }
-        )
     }
 }
 
@@ -193,12 +207,10 @@ private fun CabeceraRol(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Filtro 400", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(4.dp))
-
         Text(
             text = if (filtroActivo) "✅ Filtro ACTIVO" else "⚠️ Filtro inactivo",
-            fontSize = 16.sp
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         // Aviso discreto mientras falte el rol. Al concederlo desaparece.
