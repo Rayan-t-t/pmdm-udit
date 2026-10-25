@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
         {
             items(productos){producto ->
                 TarjetaProducto(producto)
-            }g
+            }
         }
     }
     //TARJETA DE PRODUCTO
@@ -171,7 +171,6 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-
                     val context = LocalContext.current
                         Button(
                             onClick = {
