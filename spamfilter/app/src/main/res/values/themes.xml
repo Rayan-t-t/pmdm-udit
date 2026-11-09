@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.Spamfilter" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Spamfilter.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Spamfilter</item>
+    </style>
 </resources>

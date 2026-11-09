@@ -88,13 +88,16 @@ fun FiltrosScreen(repo: FiltroRepository, modifier: Modifier = Modifier) {
                         } else {
                             "+${filtro.codigoPais}"
                         }
-                        Text(
-                            text = "$pais · ${filtro.prefijo}",
+                        Column(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(horizontal = 8.dp),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                                .padding(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = "$pais · ${filtro.prefijo}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                         TextButton(onClick = {
                             filtroEditando = filtro
                             dialogoAbierto = true
@@ -169,9 +172,8 @@ private fun DialogoFiltro(
         )
     }
     var selectorAbierto by remember { mutableStateOf(false) }
-    var error by remember(filtro) { mutableStateOf<String?>(null) }
+    var errorPrefijo by remember(filtro) { mutableStateOf<String?>(null) }
 
-    val mensajeError = error
     val textoPais = pais?.let {
         "${it.bandera} ${it.nombre} (+${it.codigo})"
     } ?: "🌍 Cualquier país"
@@ -188,14 +190,14 @@ private fun DialogoFiltro(
                     onValueChange = { nuevo ->
                         // Solo dígitos, aunque el teclado numérico no lo garantice.
                         prefijo = nuevo.filter { it.isDigit() }
-                        error = null
+                        errorPrefijo = null
                     },
                     label = { Text("Prefijo") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = mensajeError != null,
+                    isError = errorPrefijo != null,
                     supportingText = {
-                        if (mensajeError != null) {
-                            Text(mensajeError)
+                        errorPrefijo?.let {
+                            Text(it)
                         }
                     },
                     singleLine = true
@@ -211,9 +213,9 @@ private fun DialogoFiltro(
         confirmButton = {
             TextButton(onClick = {
                 if (prefijo.isEmpty()) {
-                    error = "No puede estar vacío"
+                    errorPrefijo = "No puede estar vacío"
                 } else if (!onGuardar(prefijo, pais?.codigo.orEmpty())) {
-                    error = "Ese prefijo ya existe en ese país"
+                    errorPrefijo = "Ese prefijo ya existe en ese país"
                 }
             }) {
                 Text("Guardar")
@@ -232,7 +234,7 @@ private fun DialogoFiltro(
             seleccionado = pais,
             onSeleccionar = {
                 pais = it
-                error = null
+                errorPrefijo = null
                 selectorAbierto = false
             },
             onCancelar = { selectorAbierto = false }

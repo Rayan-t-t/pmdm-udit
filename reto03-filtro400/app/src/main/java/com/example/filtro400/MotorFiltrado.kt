@@ -10,8 +10,7 @@ data class Decision(
 // Un prefijo activo junto al país al que se limita ("" = cualquier país).
 data class PrefijoRegla(
     val codigoPais: String,
-    val prefijo: String,
-    val prioridad: Int
+    val prefijo: String
 )
 
 // Copia de las reglas activas que usa el motor para decidir.
@@ -39,10 +38,9 @@ object MotorFiltrado {
             return Decision(true, "numero", numero.e164)
         }
 
-        // 3. Prefijos de mayor a menor prioridad; gana el primero que coincida.
+        // Si coinciden varios prefijos, se muestra la regla más específica.
         val prefijo = reglas.prefijos
-            .sortedByDescending { it.prioridad }
-            .firstOrNull { regla ->
+            .filter { regla ->
                 if (regla.prefijo.isEmpty()) {
                     false
                 } else if (regla.codigoPais.isNotEmpty()) {
@@ -51,6 +49,7 @@ object MotorFiltrado {
                     numero.nacional.startsWith(regla.prefijo)
                 }
             }
+            .maxByOrNull { it.prefijo.length }
         if (prefijo != null) {
             return Decision(true, "prefijo", prefijo.prefijo)
         }

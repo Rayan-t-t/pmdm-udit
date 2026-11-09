@@ -135,7 +135,7 @@ fun TarjetaPresentacion(){
                 ) {
 
                     Image(
-                        painter = painterResource(R.drawable.foto_perfil),
+                        painter = painterResource(R.drawable.qr),
                         contentDescription = "Imagen",
                         modifier = Modifier.size(250.dp)
 

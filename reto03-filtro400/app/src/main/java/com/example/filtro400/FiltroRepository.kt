@@ -12,8 +12,7 @@ data class Filtro(
     val id: Long,
     val prefijo: String,
     val codigoPais: String,
-    val activo: Boolean,
-    val prioridad: Int
+    val activo: Boolean
 )
 
 // Números concretos que queremos bloquear, además de los prefijos.
@@ -48,7 +47,7 @@ data class RegistroLlamada(
 )
 
 private const val NOMBRE_BD = "filtro400.db"
-private const val VERSION_BD = 3
+private const val VERSION_BD = 4
 private const val TABLA = "filtros"
 private const val TABLA_NUMEROS = "numeros_bloqueados"
 private const val TABLA_BLANCA = "lista_blanca"
@@ -64,7 +63,6 @@ private const val SQL_CREAR_FILTROS = """
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         prefijo TEXT NOT NULL,
         activo INTEGER NOT NULL DEFAULT 1,
-        prioridad INTEGER NOT NULL DEFAULT 0,
         codigo_pais TEXT NOT NULL DEFAULT '',
         UNIQUE (codigo_pais, prefijo)
     )
@@ -94,6 +92,25 @@ private const val SQL_MIGRAR_FILTROS = """
 
 private const val SQL_RENOMBRAR_FILTROS = """
     ALTER TABLE filtros_nueva RENAME TO filtros
+"""
+
+private const val SQL_CREAR_FILTROS_SIN_PRIORIDAD = """
+    CREATE TABLE filtros_sin_prioridad (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        prefijo TEXT NOT NULL,
+        activo INTEGER NOT NULL DEFAULT 1,
+        codigo_pais TEXT NOT NULL DEFAULT '',
+        UNIQUE (codigo_pais, prefijo)
+    )
+"""
+
+private const val SQL_MIGRAR_FILTROS_SIN_PRIORIDAD = """
+    INSERT INTO filtros_sin_prioridad (id, prefijo, activo, codigo_pais)
+    SELECT id, prefijo, activo, codigo_pais FROM filtros
+"""
+
+private const val SQL_RENOMBRAR_FILTROS_SIN_PRIORIDAD = """
+    ALTER TABLE filtros_sin_prioridad RENAME TO filtros
 """
 
 private const val SQL_NORMALIZAR_NUMEROS = """
@@ -140,7 +157,7 @@ private class FiltroDbHelper(context: Context) :
     SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        // Esquema final completo (versión 3).
+        // Esquema final completo (versión 4).
         db.execSQL(SQL_CREAR_FILTROS)
         db.execSQL(SQL_CREAR_NUMEROS_BLOQUEADOS)
         db.execSQL(SQL_CREAR_LISTA_BLANCA)
@@ -176,6 +193,14 @@ private class FiltroDbHelper(context: Context) :
             db.execSQL(SQL_NORMALIZAR_NUMEROS)
             db.execSQL(SQL_NORMALIZAR_BLANCOS)
         }
+
+        // Migración 3 -> 4: elimina la prioridad conservando los prefijos.
+        if (oldVersion < 4) {
+            db.execSQL(SQL_CREAR_FILTROS_SIN_PRIORIDAD)
+            db.execSQL(SQL_MIGRAR_FILTROS_SIN_PRIORIDAD)
+            db.execSQL("DROP TABLE $TABLA")
+            db.execSQL(SQL_RENOMBRAR_FILTROS_SIN_PRIORIDAD)
+        }
     }
 }
 
@@ -203,7 +228,7 @@ class FiltroRepository(context: Context) {
 
     // Devuelve todos los filtros ordenados por id ascendente.
     fun listar(): List<Filtro> {
-        val columnas = arrayOf("id", "prefijo", "codigo_pais", "activo", "prioridad")
+        val columnas = arrayOf("id", "prefijo", "codigo_pais", "activo")
         return helper.readableDatabase
             .query(TABLA, columnas, null, null, null, null, "id ASC")
             .use { cursor ->
@@ -287,19 +312,6 @@ class FiltroRepository(context: Context) {
     fun eliminar(id: Long) {
         helper.writableDatabase.delete(
             TABLA,
-            "id = ?",
-            arrayOf(id.toString())
-        )
-    }
-
-    // Cambia la prioridad de un prefijo (mayor = se evalúa antes).
-    fun setPrioridad(id: Long, prioridad: Int) {
-        val valores = ContentValues().apply {
-            put("prioridad", prioridad)
-        }
-        helper.writableDatabase.update(
-            TABLA,
-            valores,
             "id = ?",
             arrayOf(id.toString())
         )
@@ -529,12 +541,12 @@ class FiltroRepository(context: Context) {
         val prefijos = helper.readableDatabase
             .query(
                 TABLA,
-                arrayOf("codigo_pais", "prefijo", "prioridad"),
+                arrayOf("codigo_pais", "prefijo"),
                 "activo = ?",
                 arrayOf("1"),
                 null,
                 null,
-                "prioridad DESC, id ASC"
+                "id ASC"
             )
             .use { cursor ->
                 buildList {
@@ -546,9 +558,6 @@ class FiltroRepository(context: Context) {
                                 ),
                                 prefijo = cursor.getString(
                                     cursor.getColumnIndexOrThrow("prefijo")
-                                ),
-                                prioridad = cursor.getInt(
-                                    cursor.getColumnIndexOrThrow("prioridad")
                                 )
                             )
                         )
@@ -669,8 +678,7 @@ class FiltroRepository(context: Context) {
         id = getLong(getColumnIndexOrThrow("id")),
         prefijo = getString(getColumnIndexOrThrow("prefijo")),
         codigoPais = getString(getColumnIndexOrThrow("codigo_pais")),
-        activo = getInt(getColumnIndexOrThrow("activo")) == 1,
-        prioridad = getInt(getColumnIndexOrThrow("prioridad"))
+        activo = getInt(getColumnIndexOrThrow("activo")) == 1
     )
 
     private fun Cursor.aNumeroBloqueado(): NumeroBloqueado = NumeroBloqueado(

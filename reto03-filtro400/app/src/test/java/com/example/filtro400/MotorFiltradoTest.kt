@@ -13,8 +13,8 @@ class MotorFiltradoTest {
         prefijos: List<PrefijoRegla> = emptyList()
     ) = ReglasActivas(listaBlanca, numerosBloqueados, prefijos)
 
-    private fun prefijo(codigoPais: String, prefijo: String, prioridad: Int = 0) =
-        PrefijoRegla(codigoPais, prefijo, prioridad)
+    private fun prefijo(codigoPais: String, prefijo: String) =
+        PrefijoRegla(codigoPais, prefijo)
 
     // Un 400 español y el mismo 400 francés (mismo prefijo, distinto país).
     private val espanol400 = NumeroNormalizado("+34400123456", "34", "400123456")
@@ -27,7 +27,7 @@ class MotorFiltradoTest {
             espanol400,
             reglas(
                 listaBlanca = listOf("+34400123456"),
-                prefijos = listOf(prefijo("34", "400", 10))
+                prefijos = listOf(prefijo("34", "400"))
             )
         )
         assertFalse(decision.bloquear)
@@ -84,14 +84,14 @@ class MotorFiltradoTest {
         assertFalse(MotorFiltrado.evaluar(espanol600, cualquierPais).bloquear)
     }
 
-    // Entre prefijos que coinciden gana el de mayor prioridad.
-    @Test fun prioridadEntrePrefijos() {
+    // Sin prioridades configurables, se informa el prefijo más específico.
+    @Test fun prefijoMasEspecificoCoincidente() {
         val decision = MotorFiltrado.evaluar(
             espanol400,
             reglas(
                 prefijos = listOf(
-                    prefijo("34", "400", 1),
-                    prefijo("34", "4001", 10)
+                    prefijo("34", "400"),
+                    prefijo("34", "4001")
                 )
             )
         )
