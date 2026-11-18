@@ -19,15 +19,27 @@ class MyApp extends StatelessWidget {
       title: 'UDITFLIX',
       //OCULTAMOS LA ETIQUETA DEBUG
       debugShowCheckedModeBanner: false,
-      //Configuracion visual general
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5B2D90)),
-        scaffoldBackgroundColor: const Color(0xFFF7F5FA),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF38566B),
+          surface: const Color(0xFFFFFFFF),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF6F8FA),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 1,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: Color(0xFFE6EAEE)),
+          ),
+        ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF5B2D90),
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF202A33),
           centerTitle: false,
+          elevation: 0,
         ),
       ),
       home: const CatalogoScreen(),

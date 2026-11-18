@@ -1,30 +1,44 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:uditflix/main.dart';
+import 'package:uditflix/screens/ficha_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('el catálogo muestra UDITflix, destacados y el acceso a Arcade',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('UDITflix'), findsOneWidget);
+    expect(find.text('Destacados'), findsOneWidget);
+    expect(find.text('Introduccion a flutter'), findsWidgets);
+    expect(find.byTooltip('UDIT Arcade'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('tocar un contenido abre su ficha con el botón de reproducción',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    final comic = find.text('El mundo de los comics').last;
+    await tester.ensureVisible(comic);
+    await tester.pumpAndSettle();
+    await tester.tap(comic);
     await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(FichaScreen), findsOneWidget);
+    expect(find.text('Reproducir vídeo'), findsOneWidget);
+  });
+
+  testWidgets('el botón de UDIT Arcade abre la pantalla del juego',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.byTooltip('UDIT Arcade'));
+    // No usamos pumpAndSettle: Flame mantiene un ticker activo.
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Toca para saltar'), findsOneWidget);
+    expect(find.text('Puntos: 0'), findsOneWidget);
   });
 }
