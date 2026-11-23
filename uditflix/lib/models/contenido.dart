@@ -11,6 +11,14 @@ class Contenido {
   final String descripcion;
   final String tipo;
   final String duracion;
+
+  // Campos opcionales para la cartelera (imagen), el reproductor (vídeo)
+  // y la sección destacada. Son opcionales para no romper el catálogo
+  // original, que solo tenía los cinco campos anteriores.
+  final String? imagenUrl;
+  final String? videoUrl;
+  final bool destacado;
+
   // Constructor
   const Contenido({
     required this.id,
@@ -18,5 +26,8 @@ class Contenido {
     required this.descripcion,
     required this.tipo,
     required this.duracion,
+    this.imagenUrl,
+    this.videoUrl,
+    this.destacado = false,
   });
 }
