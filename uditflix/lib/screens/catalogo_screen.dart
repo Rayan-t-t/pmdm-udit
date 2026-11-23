@@ -16,6 +16,7 @@ class CatalogoScreen extends StatefulWidget {
 class _CatalogoScreenState extends State<CatalogoScreen> {
   final PageController _destacadosController = PageController();
   int _destacadoActual = 0;
+  int _paginaActual = 0;
 
   @override
   void dispose() {
@@ -31,29 +32,52 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
     );
   }
 
-  void _abrirArcade(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const ArcadeScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(112),
+        preferredSize: const Size.fromHeight(78),
         child: _buildHeader(context),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-        children: [
-          _buildDestacados(context),
-          const SizedBox(height: 32),
-          _buildCatalogo(context),
-          const SizedBox(height: 36),
-          _buildFooter(),
+      body: _paginaActual == 0
+          ? _buildInicio(context)
+          : const ArcadeScreen(embedded: true),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _paginaActual,
+        onDestinationSelected: (index) => setState(() => _paginaActual = index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.sports_esports_outlined),
+            selectedIcon: Icon(Icons.sports_esports),
+            label: 'Arcade',
+            tooltip: 'UDIT Arcade',
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInicio(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      children: [
+        _buildDestacados(context),
+        const SizedBox(height: 32),
+        _buildCategoria(context, 'Vídeos', const {'video', 'musica'}),
+        const SizedBox(height: 28),
+        _buildCategoria(context, 'Imágenes', const {'comic'}),
+        const SizedBox(height: 28),
+        _buildCategoria(context, 'Videojuegos', const {'videojuego'}),
+        const SizedBox(height: 32),
+        _buildArcadeSection(context),
+        const SizedBox(height: 24),
+        _buildFooter(),
+      ],
     );
   }
 
@@ -77,24 +101,6 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.5,
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _HeaderButton(
-                  label: 'Inicio',
-                  icon: Icons.home_outlined,
-                  selected: true,
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 8),
-                _HeaderButton(
-                  label: 'Arcade',
-                  icon: Icons.sports_esports_outlined,
-                  tooltip: 'UDIT Arcade',
-                  onPressed: () => _abrirArcade(context),
-                ),
-              ],
             ),
           ],
         ),
@@ -151,10 +157,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 132,
-              child: UditImage(url: contenido.imagenUrl),
-            ),
+            SizedBox(height: 132, child: UditImage(url: contenido.imagenUrl)),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -166,9 +169,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF202A33),
-                          ),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF202A33),
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -176,9 +179,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF586570),
-                            height: 1.35,
-                          ),
+                        color: const Color(0xFF586570),
+                        height: 1.35,
+                      ),
                     ),
                     const Spacer(),
                     Row(
@@ -204,20 +207,29 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
     );
   }
 
-  Widget _buildCatalogo(BuildContext context) {
+  Widget _buildCategoria(
+    BuildContext context,
+    String titulo,
+    Set<String> tipos,
+  ) {
+    final items = contenidos
+        .where((contenido) => tipos.contains(contenido.tipo.toLowerCase()))
+        .toList();
+    if (items.isEmpty) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Explorar catálogo', 'Vídeos, cómics y más'),
+        _buildSectionTitle(titulo, '${items.length} contenidos'),
         const SizedBox(height: 14),
         SizedBox(
           height: 270,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: contenidos.length,
+            itemCount: items.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final contenido = contenidos[index];
+              final contenido = items[index];
               return SizedBox(
                 width: 164,
                 child: Card(
@@ -268,6 +280,28 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
     );
   }
 
+  Widget _buildArcadeSection(BuildContext context) {
+    return Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Icon(
+          Icons.sports_esports_outlined,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        title: const Text(
+          'UDIT Arcade',
+          style: TextStyle(
+            color: Color(0xFF202A33),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: const Text('Juega a Udit Flappy'),
+        trailing: const Icon(Icons.arrow_forward),
+        onTap: () => setState(() => _paginaActual = 1),
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,42 +349,6 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
         ],
       ),
     );
-  }
-}
-
-class _HeaderButton extends StatelessWidget {
-  const _HeaderButton({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-    this.selected = false,
-    this.tooltip,
-  });
-
-  final String label;
-  final IconData icon;
-  final VoidCallback onPressed;
-  final bool selected;
-  final String? tooltip;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected
-        ? Theme.of(context).colorScheme.primary
-        : const Color(0xFF586570);
-    final button = TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      style: TextButton.styleFrom(
-        foregroundColor: color,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        textStyle: TextStyle(
-          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-        ),
-      ),
-    );
-    return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
 }
 
